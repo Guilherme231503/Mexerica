@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ... Seus estilos CSS (inalterados) ... */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f5f5f7;
@@ -64,8 +63,6 @@
         button:hover {
             background-color: #005bb5;
         }
-        
-        /* Estilos do Produto e Resumo */
         #product-image-checkout {
             width: 80%;
             height: auto;
@@ -89,10 +86,8 @@
             font-weight: 700;
             float: right;
         }
-
-        /* Estilos da Tela de Conclusão */
         #confirmation-screen {
-            display: none; /* Escondido por padrão */
+            display: none;
         }
         .success-icon {
             color: #32c432;
@@ -153,97 +148,11 @@
 
     </div>
 
-<script type="module">
-  // --- IMPORTS ---
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
-
-  // --- CONFIGURAÇÃO ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyAdTmzY54v75WCqV9DG8EXX6EWhUFuho1s",
-    authDomain: "mexerica-a9f2e.firebaseapp.com",
-    projectId: "mexerica-a9f2e",
-    storageBucket: "mexerica-a9f2e.firebasestorage.app",
-    messagingSenderId: "219607689861",
-    appId: "1:219607689861:web:226fab85ebde6ff5a857ec",
-    measurementId: "G-NLP6248Z12"
-  };
-
-  // --- INICIALIZAÇÃO E REFERÊNCIAS ---
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  
-  // Referência local e segura ao Firestore
-  const db = getFirestore(app);
-  
-  // Variável para armazenar o nome do cliente (agora local ao módulo)
-  let customerName = '';
-
-  // 1. FUNÇÃO DE SALVAMENTO ATUALIZADA (DENTRO DO MÓDULO)
-  async function saveOrderToFirebase(name, order) {
-      // *** Sintaxe Corrigida: Usando addDoc e collection importados ***
-      // Essa é a sintaxe mais nova e correta para salvar documentos
-      const ordersCollection = collection(db, "orders");
-
-      const newOrder = {
-          customerName: name,
-          model: order.model, 
-          price: order.price,
-          color: order.color,
-          storage: order.storage,
-          memory: order.memory,
-          timestamp: serverTimestamp()
-      };
-      
-      try {
-          await addDoc(ordersCollection, newOrder);
-          console.log("Pedido salvo no Firebase com sucesso!");
-      } catch (error) {
-          console.error("Erro ao salvar pedido no Firebase: ", error);
-          if (error.code === 'permission-denied') {
-              alert("Erro de Permissão: Verifique as Regras de Segurança do Firestore.");
-          } else {
-              alert("Erro ao salvar o pedido. Tente novamente.");
-          }
-      }
-  }
-
-  // 2. LÓGICA DE PAGAMENTO (DENTRO DO MÓDULO)
-  // Carregar dados fora do listener
-  const orderData = JSON.parse(localStorage.getItem('mexericaPhoneOrderM'));
-  
-  if (document.getElementById('checkout-form')) {
-    document.getElementById('checkout-form').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        customerName = document.getElementById('customer-name').value;
-        
-        const payButton = document.getElementById('pay-button');
-        payButton.textContent = "Processando Pagamento...";
-        payButton.disabled = true; 
-        
-        // Chama a função de salvamento
-        await saveOrderToFirebase(customerName, orderData);
-
-        setTimeout(() => {
-            document.getElementById('payment-screen').style.display = 'none';
-            document.getElementById('confirmation-screen').style.display = 'block';
-        }, 1500);
-    });
-  }
-</script>
-
 <script>
-    // Agora este bloco SÓ contém a lógica que não precisa de importações do Firebase (jsPDF e Lógica de UI)
-
-    // Use a função window.jsPDF, que é exposta pela biblioteca
     const { jsPDF } = window.jspdf;
 
-    // 1. Carregar Detalhes do Pedido do LocalStorage
     const orderData = JSON.parse(localStorage.getItem('mexericaPhoneOrderM'));
-    
-    // Mapeamento inverso para o nome do arquivo da cor (ex: "Cinza-do-Pecado" -> "cinza")
+
     const colorMap = {
         'Verde-Amazônia': 'green',
         'Lavanda': 'lavande',
@@ -257,18 +166,17 @@
         window.location.href = 'index.html';
     }
 
-    // Variável global para o nome do cliente (usada para o PDF)
     let customerName = '';
 
-    // 2. Exibir Resumo e Imagem (Lógica de UI)
+    // Exibir resumo do pedido
     const colorKey = colorMap[orderData.color];
-    document.getElementById('summary-model').textContent = `${orderData.model}`;
+    document.getElementById('summary-model').textContent = orderData.model;
     document.getElementById('product-image-checkout').src = `mexerica_phone_${colorKey}_frontm.png`;
 
     document.getElementById('summary-color').innerHTML = `Cor: <strong>${orderData.color}</strong>`;
     document.getElementById('summary-storage').innerHTML = `Armazenamento: <strong>${orderData.storage}</strong>`;
     document.getElementById('summary-memory').innerHTML = `Memória RAM: <strong>${orderData.memory}</strong>`;
-    
+
     const formattedPrice = orderData.price.toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL',
@@ -276,107 +184,127 @@
     });
     document.getElementById('summary-price').textContent = formattedPrice;
 
-    // 3. Listener do Formulário (Ajuste para pegar o nome e chamar o PDF)
-    // O salvamento no Firebase foi movido para o bloco 'module'.
-    if (document.getElementById('checkout-form')) {
-        document.getElementById('checkout-form').addEventListener('submit', function(e) {
-            // Esta função só pega o nome do cliente antes que o módulo faça o salvamento
-            customerName = document.getElementById('customer-name').value;
-        });
-    }
+    // Lógica do botão de pagamento (simulação)
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        customerName = document.getElementById('customer-name').value;
 
-    // 4. Função de Geração de PDF (Baixar Nota Fiscal)
+        const payButton = document.getElementById('pay-button');
+        payButton.textContent = "Processando Pagamento...";
+        payButton.disabled = true;
+
+        setTimeout(() => {
+            document.getElementById('payment-screen').style.display = 'none';
+            document.getElementById('confirmation-screen').style.display = 'block';
+        }, 1500);
+    });
+
+    // Geração do PDF
     document.getElementById('download-pdf-button').addEventListener('click', function() {
-        // ... Lógica do PDF inalterada, pois usa customerName (global) e orderData (local)
         const doc = new jsPDF();
         
-        // ... (resto da lógica do PDF aqui) ...
         const companyName = "Mexerica Phone Ltda.";
         const companyAddress = "João Pessoa , 69 - Nordeste, Brasil";
         const invoiceNumber = "NF-2025-" + Math.floor(Math.random() * 10000);
         const date = new Date().toLocaleDateString('pt-BR');
-        
-        let y = 15; // Posição Y inicial
+        let y = 15;
 
-        // --- CABEÇALHO E LOGO ---
-        
-        doc.setFontSize(24);
-        doc.setFont("helvetica", "bold");
-        doc.text("Mexerica Phone", 10, y);
-        y += 8;
+  const qrUrl = "https://guilherme231503.github.io/Mexerica/mexericaphonenewm.html";
 
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text(companyName, 10, y);
-        y += 5;
-        doc.text(companyAddress, 10, y);
-        y += 15;
-        
-        // --- DETALHES DA NOTA ---
-        
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
-        doc.text(`NOTA FISCAL: ${invoiceNumber}`, 150, 15);
-        doc.text(`DATA: ${date}`, 150, 22);
-        y = 40;
-        
-        // --- INFORMAÇÕES DO CLIENTE ---
-        
-        doc.setFillColor(240, 240, 240);
-        doc.rect(10, y, 190, 10, 'F');
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        doc.text("CLIENTE:", 15, y + 7);
-        doc.setFont("helvetica", "normal");
-        doc.text(customerName, 50, y + 7);
-        y += 15;
+  // --- GERAR QR CODE INVISÍVEL ---
+  new QRCode(document.getElementById("qrcode"), {
+    text: qrUrl,
+    width: 100,
+    height: 100,
+    correctLevel: QRCode.CorrectLevel.H
+  });
 
-        // --- ITENS DO PEDIDO ---
-        
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        doc.text("DESCRIÇÃO", 15, y);
-        doc.text("VALOR UNITÁRIO", 150, y);
-        y += 5;
-        doc.setLineWidth(0.5);
-        doc.line(10, y, 200, y);
-        y += 5;
+  // --- GERAR PDF ---
+  const doc = new jsPDF();
+  let y = 15;
 
-        // Item Principal
-        doc.setFont("helvetica", "normal");
-        doc.text(`${orderData.model}`, 15, y);
-        y += 5;
-        
-        // Sub-detalhes
-        doc.setFontSize(9);
-        doc.text(`- Cor: ${orderData.color}`, 20, y);
-        y += 4;
-        doc.text(`- Armazenamento: ${orderData.storage}`, 20, y);
-        y += 4;
-        doc.text(`- Memória: ${orderData.memory}`, 20, y);
-        y += 5;
-        
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "bold");
-        doc.text(formattedPrice, 150, y - 5); // Preço do produto
-        y += 20;
+  // Cabeçalho
+  doc.setFontSize(24);
+  doc.setFont("helvetica", "bold");
+  doc.text("Mexerica Phone", 10, y);
+  y += 8;
 
-        // --- TOTAL ---
-        doc.setLineWidth(1);
-        doc.line(10, y, 200, y);
-        y += 5;
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("Mexerica Phone Ltda.", 10, y);
+  y += 5;
+  doc.text("João Pessoa, 69 - Nordeste, Brasil", 10, y);
+  y += 15;
 
-        doc.setFontSize(16);
-        doc.text("TOTAL GERAL:", 15, y);
-        doc.text(formattedPrice, 150, y);
-        y += 15;
+  // Detalhes da nota
+  const invoiceNumber = "NF-2025-" + Math.floor(Math.random() * 10000);
+  const date = new Date().toLocaleDateString('pt-BR');
 
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "italic");
-        doc.text("Obrigado por sua compra! Viva a Tradição!", 10, 280);
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.text(`NOTA FISCAL: ${invoiceNumber}`, 150, 15);
+  doc.text(`DATA: ${date}`, 150, 22);
+  y = 40;
 
-        // Salvar o PDF
-        doc.save(`Nota_Fiscal_Mexerica_Phone.pdf`);
+  // Informações do cliente
+  doc.setFillColor(240, 240, 240);
+  doc.rect(10, y, 190, 10, 'F');
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("CLIENTE:", 15, y + 7);
+  doc.setFont("helvetica", "normal");
+  doc.text(customerName, 50, y + 7);
+  y += 15;
+
+  // Itens do pedido
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("DESCRIÇÃO", 15, y);
+  doc.text("VALOR UNITÁRIO", 150, y);
+  y += 5;
+  doc.setLineWidth(0.5);
+  doc.line(10, y, 200, y);
+  y += 5;
+
+  // Item principal
+  doc.setFont("helvetica", "normal");
+  doc.text(orderData.model, 15, y);
+  y += 5;
+  doc.setFontSize(9);
+  doc.text(`- Cor: ${orderData.color}`, 20, y);
+  y += 4;
+  doc.text(`- Armazenamento: ${orderData.storage}`, 20, y);
+  y += 4;
+  doc.text(`- Memória: ${orderData.memory}`, 20, y);
+  y += 5;
+
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text(formattedPrice, 150, y - 5);
+  y += 20;
+
+  // Total
+  doc.setLineWidth(1);
+  doc.line(10, y, 200, y);
+  y += 5;
+  doc.setFontSize(16);
+  doc.text("TOTAL GERAL:", 15, y);
+  doc.text(formattedPrice, 150, y);
+  y += 15;
+
+  // Mensagem final
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "italic");
+  doc.text("Obrigado por sua compra! Viva a Tradição!", 10, 280);
+
+  // Adicionar QR Code
+  const qrCanvas = document.querySelector("#qrcode canvas");
+  const qrDataURL = qrCanvas.toDataURL("image/png");
+  doc.addImage(qrDataURL, "PNG", 150, 230, 40, 40); // posição x, y, largura, altura
+  doc.text("Escaneie o QR Code para acessar a página", 10, 250);
+
+  // Salvar PDF
+  doc.save("Nota_Fiscal_com_QR.pdf");
     });
 </script>
 
