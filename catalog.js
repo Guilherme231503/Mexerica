@@ -14,7 +14,7 @@ const products = [
   {
     name: "Mexerica Phone 15 Plus",
     price: 4999,
-    colors: ["#A9B689","DFCEEA","96AED1", "#353839", "#F5F5F5"],
+    colors: ["#A9B689","#DFCEEA","#96AED1", "#353839", "#F5F5F5"],
     redirect: "mexericaphonem.html",
     image: "mexerica_phone_green_frontm.png",
     // novidades
