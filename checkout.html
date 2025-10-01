@@ -112,7 +112,7 @@
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -151,7 +151,22 @@
 <script>
     // jsPDF
     const { jsPDF } = window.jspdf;
+function generateQRCodeBase64(text) {
+        return new Promise((resolve) => {
+            const qrDiv = document.createElement("div");
+            const qrCode = new QRCode(qrDiv, {
+                text: text,
+                width: 100,
+                height: 100,
+                correctLevel: QRCode.CorrectLevel.H
+            });
 
+            setTimeout(() => {
+                const img = qrDiv.querySelector("img");
+                resolve(img.src);
+            }, 500);
+        });
+    }
     // Carregar dados do LocalStorage
     const orderData = JSON.parse(localStorage.getItem('mexericaPhoneOrder'));
     if (!orderData) {
@@ -207,102 +222,79 @@
         const date = new Date().toLocaleDateString('pt-BR');
         
         let y = 15;
-  const qrUrl = "https://guilherme231503.github.io/Mexerica/mexericaphonenew.html";
+generateQRCodeBase64("https://guilherme231503.github.io/Mexerica/mexericaphonenew.html").then((qrBase64) => {
+        doc.setFontSize(24);
+        doc.setFont("helvetica", "bold");
+        doc.text("Mexerica Phone", 10, y);
+        y += 8;
 
-  // --- GERAR QR CODE INVISÍVEL ---
-  new QRCode(document.getElementById("qrcode"), {
-    text: qrUrl,
-    width: 100,
-    height: 100,
-    correctLevel: QRCode.CorrectLevel.H
-  });
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(companyName, 10, y);
+        y += 5;
+        doc.text(companyAddress, 10, y);
+        y += 15;
 
-  // --- GERAR PDF ---
-  const doc = new jsPDF();
-  let y = 15;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(`NOTA FISCAL: ${invoiceNumber}`, 150, 15);
+        doc.text(`DATA: ${date}`, 150, 22);
+        y = 40;
 
-  // Cabeçalho
-  doc.setFontSize(24);
-  doc.setFont("helvetica", "bold");
-  doc.text("Mexerica Phone", 10, y);
-  y += 8;
+        doc.setFillColor(240, 240, 240);
+        doc.rect(10, y, 190, 10, 'F');
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("CLIENTE:", 15, y + 7);
+        doc.setFont("helvetica", "normal");
+        doc.text(customerName, 50, y + 7);
+        y += 15;
 
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text("Mexerica Phone Ltda.", 10, y);
-  y += 5;
-  doc.text("João Pessoa, 69 - Nordeste, Brasil", 10, y);
-  y += 15;
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("DESCRIÇÃO", 15, y);
+        doc.text("VALOR UNITÁRIO", 150, y);
+        y += 5;
+        doc.setLineWidth(0.5);
+        doc.line(10, y, 200, y);
+        y += 5;
 
-  // Detalhes da nota
-  const invoiceNumber = "NF-2025-" + Math.floor(Math.random() * 10000);
-  const date = new Date().toLocaleDateString('pt-BR');
+        doc.setFont("helvetica", "normal");
+        doc.text(orderData.model, 15, y);
+        y += 5;
 
-  doc.setFontSize(12);
-  doc.setFont("helvetica", "bold");
-  doc.text(`NOTA FISCAL: ${invoiceNumber}`, 150, 15);
-  doc.text(`DATA: ${date}`, 150, 22);
-  y = 40;
+        doc.setFontSize(9);
+        doc.text(`- Cor: ${orderData.color}`, 20, y);
+        y += 4;
+        doc.text(`- Armazenamento: ${orderData.storage}`, 20, y);
+        y += 4;
+        doc.text(`- Memória: ${orderData.memory}`, 20, y);
+        y += 5;
 
-  // Informações do cliente
-  doc.setFillColor(240, 240, 240);
-  doc.rect(10, y, 190, 10, 'F');
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("CLIENTE:", 15, y + 7);
-  doc.setFont("helvetica", "normal");
-  doc.text(customerName, 50, y + 7);
-  y += 15;
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(formattedPrice, 150, y - 5);
+        y += 20;
 
-  // Itens do pedido
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("DESCRIÇÃO", 15, y);
-  doc.text("VALOR UNITÁRIO", 150, y);
-  y += 5;
-  doc.setLineWidth(0.5);
-  doc.line(10, y, 200, y);
-  y += 5;
+        doc.setLineWidth(1);
+        doc.line(10, y, 200, y);
+        y += 5;
 
-  // Item principal
-  doc.setFont("helvetica", "normal");
-  doc.text(orderData.model, 15, y);
-  y += 5;
-  doc.setFontSize(9);
-  doc.text(`- Cor: ${orderData.color}`, 20, y);
-  y += 4;
-  doc.text(`- Armazenamento: ${orderData.storage}`, 20, y);
-  y += 4;
-  doc.text(`- Memória: ${orderData.memory}`, 20, y);
-  y += 5;
+        doc.setFontSize(16);
+        doc.text("TOTAL GERAL:", 15, y);
+        doc.text(formattedPrice, 150, y);
+        y += 15;
 
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text(formattedPrice, 150, y - 5);
-  y += 20;
+        doc.addImage(qrBase64, "PNG", 160, 250, 35, 35);
+        doc.setFontSize(9);
+        doc.text("Escaneie o QR Code para acessar", 140, 290);
 
-  // Total
-  doc.setLineWidth(1);
-  doc.line(10, y, 200, y);
-  y += 5;
-  doc.setFontSize(16);
-  doc.text("TOTAL GERAL:", 15, y);
-  doc.text(formattedPrice, 150, y);
-  y += 15;
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "italic");
+        doc.text("Obrigado por sua compra! Viva a Tradição!", 10, 280);
 
-  // Mensagem final
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "italic");
-  doc.text("Obrigado por sua compra! Viva a Tradição!", 10, 280);
-
-  // Adicionar QR Code
-  const qrCanvas = document.querySelector("#qrcode canvas");
-  const qrDataURL = qrCanvas.toDataURL("image/png");
-  doc.addImage(qrDataURL, "PNG", 150, 230, 40, 40); // posição x, y, largura, altura
-  doc.text("Escaneie o QR Code para acessar a página", 10, 250);
-
-  // Salvar PDF
-  doc.save("Nota_Fiscal_com_QR.pdf");
+        doc.save(`Nota_Fiscal_Mexerica_Phone.pdf`);
+    });
     });
 </script>
 
