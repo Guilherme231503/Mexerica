@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Mexerica Phone</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ... Seus estilos CSS (inalterados) ... */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .checkout-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 90%;
+            margin-top: 50px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-align: left;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            background-color: #0071e3;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        
+        /* Estilos do Produto e Resumo */
+        #product-image-checkout {
+            width: 80%;
+            height: auto;
+            max-height: 200px;
+            margin-bottom: 20px;
+            object-fit: contain;
+        }
+        #order-summary {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            text-align: left;
+        }
+        #order-summary p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        #order-summary strong {
+            font-weight: 700;
+            float: right;
+        }
+
+        /* Estilos da Tela de Conclusão */
+        #confirmation-screen {
+            display: none; /* Escondido por padrão */
+        }
+        .success-icon {
+            color: #32c432;
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        .success-message {
+            font-size: 20px;
+            font-weight: 600;
+            color: #32c432;
+            margin-bottom: 10px;
+        }
+        .download-button {
+            background-color: #32c432;
+            margin-top: 20px;
+        }
+        .download-button:hover {
+            background-color: #279f27;
+        }
+    </style>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+<body>
+
+    <div class="checkout-box">
+        
+        <div id="payment-screen">
+            <h1>Confirmação de Pedido</h1>
+
+            <img id="product-image-checkout" src="" alt="Imagem do Mexerica Phone">
+            
+            <div id="order-summary">
+                <p>Produto: <strong id="summary-model">Mexerica Phone 15 Pro Max</strong></p>
+                <p id="summary-color">Cor: </p>
+                <p id="summary-storage">Armazenamento: </p>
+                <p id="summary-memory">Memória RAM: </p>
+                <hr style="margin: 10px 0;">
+                <p style="font-size: 18px;">Total: <strong id="summary-price" style="font-size: 18px;"></strong></p>
+            </div>
+
+            <form id="checkout-form">
+                <label for="customer-name">Seu Nome Completo:</label>
+                <input type="text" id="customer-name" required placeholder="Digite seu nome">
+
+                <button type="submit" id="pay-button">Pagar e Finalizar</button>
+            </form>
+        </div>
+        
+        <div id="confirmation-screen">
+            <span class="success-icon">✓</span>
+            <div class="success-message">Pagamento Concluído!</div>
+            <p>Sua compra foi realizada com sucesso. Clique abaixo para baixar a sua nota fiscal eletrônica.</p>
+            
+            <button id="download-pdf-button" class="download-button">Baixar Nota Fiscal (PDF)</button>
+        </div>
+
+    </div>
+
+<script type="module">
+  // --- IMPORTS ---
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-analytics.js";
+
+  // --- CONFIGURAÇÃO ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyAdTmzY54v75WCqV9DG8EXX6EWhUFuho1s",
+    authDomain: "mexerica-a9f2e.firebaseapp.com",
+    projectId: "mexerica-a9f2e",
+    storageBucket: "mexerica-a9f2e.firebasestorage.app",
+    messagingSenderId: "219607689861",
+    appId: "1:219607689861:web:226fab85ebde6ff5a857ec",
+    measurementId: "G-NLP6248Z12"
+  };
+
+  // --- INICIALIZAÇÃO E REFERÊNCIAS ---
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  
+  // Referência local e segura ao Firestore
+  const db = getFirestore(app);
+  
+  // Variável para armazenar o nome do cliente (agora local ao módulo)
+  let customerName = '';
+
+  // 1. FUNÇÃO DE SALVAMENTO ATUALIZADA (DENTRO DO MÓDULO)
+  async function saveOrderToFirebase(name, order) {
+      // *** Sintaxe Corrigida: Usando addDoc e collection importados ***
+      // Essa é a sintaxe mais nova e correta para salvar documentos
+      const ordersCollection = collection(db, "orders");
+
+      const newOrder = {
+          customerName: name,
+          model: order.model, 
+          price: order.price,
+          color: order.color,
+          storage: order.storage,
+          memory: order.memory,
+          timestamp: serverTimestamp()
+      };
+      
+      try {
+          await addDoc(ordersCollection, newOrder);
+          console.log("Pedido salvo no Firebase com sucesso!");
+      } catch (error) {
+          console.error("Erro ao salvar pedido no Firebase: ", error);
+          if (error.code === 'permission-denied') {
+              alert("Erro de Permissão: Verifique as Regras de Segurança do Firestore.");
+          } else {
+              alert("Erro ao salvar o pedido. Tente novamente.");
+          }
+      }
+  }
+
+  // 2. LÓGICA DE PAGAMENTO (DENTRO DO MÓDULO)
+  // Carregar dados fora do listener
+  const orderData = JSON.parse(localStorage.getItem('mexericaPhoneOrder'));
+  
+  if (document.getElementById('checkout-form')) {
+    document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        customerName = document.getElementById('customer-name').value;
+        
+        const payButton = document.getElementById('pay-button');
+        payButton.textContent = "Processando Pagamento...";
+        payButton.disabled = true; 
+        
+        // Chama a função de salvamento
+        await saveOrderToFirebase(customerName, orderData);
+
+        setTimeout(() => {
+            document.getElementById('payment-screen').style.display = 'none';
+            document.getElementById('confirmation-screen').style.display = 'block';
+        }, 1500);
+    });
+  }
+</script>
+
+<script>
+    // Agora este bloco SÓ contém a lógica que não precisa de importações do Firebase (jsPDF e Lógica de UI)
+
+    // Use a função window.jsPDF, que é exposta pela biblioteca
+    const { jsPDF } = window.jspdf;
+
+    // 1. Carregar Detalhes do Pedido do LocalStorage
+    const orderData = JSON.parse(localStorage.getItem('mexericaPhoneOrder'));
+    
+    // Mapeamento inverso para o nome do arquivo da cor (ex: "Cinza-do-Pecado" -> "cinza")
+    const colorMap = {
+        'Cinza-do-Pecado': 'cinza',
+        'Laranja-Nordeste': 'laranja',
+        'Asa Branca': 'asa-branca'
+    };
+    
+    if (!orderData) {
+        alert('Nenhum pedido encontrado. Redirecionando para a loja.');
+        window.location.href = 'index.html';
+    }
+
+    // Variável global para o nome do cliente (usada para o PDF)
+    let customerName = '';
+
+    // 2. Exibir Resumo e Imagem (Lógica de UI)
+    const colorKey = colorMap[orderData.color];
+    document.getElementById('summary-model').textContent = `${orderData.model}`;
+    document.getElementById('product-image-checkout').src = `mexerica_phone_${colorKey}_front.png`;
+
+    document.getElementById('summary-color').innerHTML = `Cor: <strong>${orderData.color}</strong>`;
+    document.getElementById('summary-storage').innerHTML = `Armazenamento: <strong>${orderData.storage}</strong>`;
+    document.getElementById('summary-memory').innerHTML = `Memória RAM: <strong>${orderData.memory}</strong>`;
+    
+    const formattedPrice = orderData.price.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 0
+    });
+    document.getElementById('summary-price').textContent = formattedPrice;
+
+    // 3. Listener do Formulário (Ajuste para pegar o nome e chamar o PDF)
+    // O salvamento no Firebase foi movido para o bloco 'module'.
+    if (document.getElementById('checkout-form')) {
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            // Esta função só pega o nome do cliente antes que o módulo faça o salvamento
+            customerName = document.getElementById('customer-name').value;
+        });
+    }
+
+    // 4. Função de Geração de PDF (Baixar Nota Fiscal)
+    document.getElementById('download-pdf-button').addEventListener('click', function() {
+        // ... Lógica do PDF inalterada, pois usa customerName (global) e orderData (local)
+        const doc = new jsPDF();
+        
+        // ... (resto da lógica do PDF aqui) ...
+        const companyName = "Mexerica Phone Ltda.";
+        const companyAddress = "João Pessoa , 69 - Nordeste, Brasil";
+        const invoiceNumber = "NF-2025-" + Math.floor(Math.random() * 10000);
+        const date = new Date().toLocaleDateString('pt-BR');
+        
+        let y = 15; // Posição Y inicial
+
+        // --- CABEÇALHO E LOGO ---
+        
+        doc.setFontSize(24);
+        doc.setFont("helvetica", "bold");
+        doc.text("Mexerica Phone", 10, y);
+        y += 8;
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(companyName, 10, y);
+        y += 5;
+        doc.text(companyAddress, 10, y);
+        y += 15;
+        
+        // --- DETALHES DA NOTA ---
+        
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(`NOTA FISCAL: ${invoiceNumber}`, 150, 15);
+        doc.text(`DATA: ${date}`, 150, 22);
+        y = 40;
+        
+        // --- INFORMAÇÕES DO CLIENTE ---
+        
+        doc.setFillColor(240, 240, 240);
+        doc.rect(10, y, 190, 10, 'F');
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("CLIENTE:", 15, y + 7);
+        doc.setFont("helvetica", "normal");
+        doc.text(customerName, 50, y + 7);
+        y += 15;
+
+        // --- ITENS DO PEDIDO ---
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text("DESCRIÇÃO", 15, y);
+        doc.text("VALOR UNITÁRIO", 150, y);
+        y += 5;
+        doc.setLineWidth(0.5);
+        doc.line(10, y, 200, y);
+        y += 5;
+
+        // Item Principal
+        doc.setFont("helvetica", "normal");
+        doc.text(`${orderData.model}`, 15, y);
+        y += 5;
+        
+        // Sub-detalhes
+        doc.setFontSize(9);
+        doc.text(`- Cor: ${orderData.color}`, 20, y);
+        y += 4;
+        doc.text(`- Armazenamento: ${orderData.storage}`, 20, y);
+        y += 4;
+        doc.text(`- Memória: ${orderData.memory}`, 20, y);
+        y += 5;
+        
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(formattedPrice, 150, y - 5); // Preço do produto
+        y += 20;
+
+        // --- TOTAL ---
+        doc.setLineWidth(1);
+        doc.line(10, y, 200, y);
+        y += 5;
+
+        doc.setFontSize(16);
+        doc.text("TOTAL GERAL:", 15, y);
+        doc.text(formattedPrice, 150, y);
+        y += 15;
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "italic");
+        doc.text("Obrigado por sua compra! Viva a Tradição!", 10, 280);
+
+        // Salvar o PDF
+        doc.save(`Nota_Fiscal_Mexerica_Phone.pdf`);
+    });
+</script>
+
+</body>
+</html>

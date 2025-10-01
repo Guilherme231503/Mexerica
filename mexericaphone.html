@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mexerica Phone — Configure e Compre (Edição Final)</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <header>
+        <div class="logo">
+            <img src="mexerica.png" alt="Logo Mexerica Phone" class="mexerica-icon">
+            <span>Mexerica</span>
+        </div>
+        <nav>Comprar</nav>
+    </header>
+
+    <main>
+        <div id="product-viewer">
+            
+            <div id="multi-color-view" class="active">
+                <img id="three-in-one-img" src="mexerica_phone_3cores_side.png" alt="Mexerica Phone nas cores Laranja-Nordeste, Cinza-do-Pecado e Asa Branca">
+            </div>
+
+            <div id="main-carousel" class="hidden">
+                <div class="main-slide" data-view="front">
+                    <img class="carousel-img" src="mexerica_phone_cinza_front.png" alt="Frente do Mexerica Phone">
+                </div>
+                <div class="main-slide" data-view="back">
+                    <img class="carousel-img" src="mexerica_phone_cinza_back.png" alt="Verso do Mexerica Phone">
+                </div>
+            </div>
+        </div>
+
+        <div id="config-panel">
+            <h1 class="fade" id="configure">Configure seu Mexerica Phone 15 Pro</h1>
+            <div class="option-group model-group">
+                <h2>Tamanho.</h2>
+                <p>Qual Mexerica e adequado pra você?</p>
+                <div class="model-option selected" data-model="pro" data-price="4999">
+                    <p>MexericaPhone 15 Pro</p>
+                    <span>R$ 4999</span>
+                </div>
+                <div class="model-option" data-model="promax" data-price="5999">
+                    <p>MexericaPhone 15 Pro Max</p>
+                    <span>R$ 5999</span>
+                </div>
+            </div>
+            <p class="subtitle">A cor da tradição. O poder da inovação.</p>
+            <div class="option-group">
+                <h2>Cor.</h2>
+                <div id="color-name">Cinza-do-Pecado</div>
+                <div class="color-swatches">
+                    <div class="swatch selected" data-color="cinza" style="--swatch-color: #363636;" title="Cinza-do-Pecado"></div>
+                    <div class="swatch" data-color="laranja" style="--swatch-color: #FF8C00;" title="Laranja-Nordeste"></div>
+                    <div class="swatch" data-color="asa-branca" style="--swatch-color: #F5F5F5; border: 1px solid #ddd;" title="Asa Branca"></div>
+                </div>
+            </div>
+
+            <div class="option-group storage-group">
+                <h2>Armazenamento.</h2>
+                <p>Quanto espaço você precisa?</p>
+                <div class="storage-option selected" id="firstStorage" data-storage="128" data-price="0">
+                    <p>128 GB</p>
+                    <span>R$ 0</span>
+                </div>
+                <div class="storage-option" data-storage="256" data-price="500">
+                    <p>256 GB</p>
+                    <span>+ R$ 500</span>
+                </div>
+                <div class="storage-option" data-storage="512" data-price="1000">
+                    <p>512 GB</p>
+                    <span>+ R$ 1.000</span>
+                </div>
+                <div class="storage-option" data-storage="1024" data-price="2000">
+                    <p>1 TB</p>
+                    <span>+ R$ 2.000</span>
+                </div>
+                <div class="storage-option" data-storage="2048" data-price="4000">
+                    <p>2 TB</p>
+                    <span>+ R$ 4.000</span>
+                </div>
+            </div>
+            
+            <div class="option-group memory-group">
+                <h2>Memória RAM.</h2>
+                <p>Acelere seu fluxo de trabalho e jogos.</p>
+                
+                <div class="memory-option selected" id="firstMemory" data-memory="6" data-price="0">
+                    <p>6 GB RAM</p>
+                    <span>R$ 0</span>
+                </div>
+                <div class="memory-option" data-memory="8" data-price="800">
+                    <p>8 GB RAM</p>
+                    <span>+ R$ 800</span>
+                </div> 
+            </div>
+            <div class="buy-box">
+                <div class="price-display">
+                    <span class="label">Preço Final a partir de:</span>
+                    <span class="fade" id="final-price">R$ 5.999</span>
+                </div>
+                <button id="add-to-cart">Adicionar à Sacola</button>
+            </div>
+        </div>
+    </main>
+
+    <section id="detail-section">
+        <h2>Olhe de Perto. O que está na Caixa.</h2>
+        <div id="detail-carousel">
+            
+            <div class="detail-slide">
+                <img id="back-detail-img" src="mexerica_phone_cinza_back_full.png" alt="Detalhe do Verso do Mexerica Phone">
+                <h3>Design Essencial</h3>
+                <p>Acabamento em Cerâmica e Aço Inox Cirúrgico. A Tradição em um novo toque.</p>
+            </div>
+            
+            <div class="detail-slide">
+                <img src="mexerica_cable.png" alt="Cabo USB-C do Mexerica Phone">
+                <h3>Cabo Trançado USB-C</h3>
+                <p>Transmissão de dados ultrarrápida e design trançado para máxima durabilidade.</p>
+            </div>
+
+            <div class="detail-slide">
+                <img src="mexerica_charger.png" alt="Fonte de Alimentação do Mexerica Phone">
+                <h3>Fonte de Alimentação Rápida 20W</h3>
+                <p>Carregamento completo em tempo recorde, incluso na sua caixa.</p>
+            </div>
+
+            <div class="detail-slide">
+                <img src="mexerica_box_content.png" alt="Conteúdo completo da caixa do Mexerica Phone">
+                <h3>Na Caixa</h3>
+                <p>Mexerica Phone, Cabo USB-C, Fonte de Alimentação, e Adesivo (Laranja-Nordeste, claro).</p>
+            </div>
+        </div>
+    </section>
+    
+    <section id="price-table">
+        <h2>Comparação de Modelos e Especificações</h2>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Especificação</th>
+                        <th>Mexerica Phone 15 Pro</th>
+                        <th>Mexerica Phone 15 Pro Max</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><i class="fas fa-dollar-sign icon-spec"></i> Preço Base (128 GB)</td>
+                        <td>R$ 4.999</td>
+                        <td>R$ 5.999</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-mobile-alt icon-spec"></i> Tamanho da Tela</td>
+                        <td>6.1" (Super AMOLED)</td>
+                        <td>6.3" (XDR ProMotion)</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-sync-alt icon-spec"></i> Taxa de Atualização</td>
+                        <td>60 Hz</td>
+                        <td>120 Hz Adaptável</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-microchip icon-spec"></i> Processador</td>
+                        <td>Chip A15 Mexerica</td>
+                        <td>Chip A15 Pro Max</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-memory icon-spec"></i> Memória RAM</td>
+                        <td>6 GB</td>
+                        <td>8 GB</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-sd-card icon-spec"></i> Armazenamento Máximo</td>
+                        <td>512 GB</td>
+                        <td>2 TB</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-camera icon-spec"></i> Sistema de Câmeras</td>
+                        <td>Tripla (Principal + Ultra-Wide + Teleobjetiva)</td>
+                        <td>Tripla (Principal + Ultra-Wide + Teleobjetiva)</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fas fa-brain icon-spec"></i> Recurso de IA</td>
+                        <td><span class="ai-feature basic-ai">Filtro de Emoção Básica</span></td>
+                        <td><span class="ai-feature pro-ai">Modo Autonomia (Ajuste IA)</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer>&copy; 2025 Mexerica Phone. Todos os direitos reservados.</footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
