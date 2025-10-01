@@ -112,7 +112,7 @@
     </style>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -151,7 +151,22 @@
 <script>
     // jsPDF
     const { jsPDF } = window.jspdf.jsPDF;
+function generateQRCodeBase64(text) {
+        return new Promise((resolve) => {
+            const qrDiv = document.createElement("div");
+            const qrCode = new QRCode(qrDiv, {
+                text: text,
+                width: 100,
+                height: 100,
+                correctLevel: QRCode.CorrectLevel.H
+            });
 
+            setTimeout(() => {
+                const img = qrDiv.querySelector("img");
+                resolve(img.src);
+            }, 500);
+        });
+    }
     // Carregar dados do LocalStorage
     const orderData = JSON.parse(localStorage.getItem('mexericaPhoneOrder'));
     if (!orderData) {
@@ -207,7 +222,7 @@
         const date = new Date().toLocaleDateString('pt-BR');
         
         let y = 15;
-
+generateQRCodeBase64("https://guilherme231503.github.io/Mexerica/mexericaphonenew.html").then((qrBase64) => {
         doc.setFontSize(24);
         doc.setFont("helvetica", "bold");
         doc.text("Mexerica Phone", 10, y);
@@ -270,11 +285,16 @@
         doc.text(formattedPrice, 150, y);
         y += 15;
 
+        doc.addImage(qrBase64, "PNG", 160, 250, 35, 35);
+        doc.setFontSize(9);
+        doc.text("Escaneie o QR Code para saber mais sobre o dispositivo.", 140, 290);
+
         doc.setFontSize(10);
         doc.setFont("helvetica", "italic");
         doc.text("Obrigado por sua compra! Viva a Tradição!", 10, 280);
 
-        doc.save(`Nota_Fiscal_Mexerica_Phone.pdf`);
+        doc.save(`${invoiceNumber}.pdf`);
+    });
     });
 </script>
 
