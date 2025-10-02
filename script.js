@@ -142,9 +142,9 @@ function filterOptionsByModel() {
     memoryOptions.forEach(opt => opt.classList.remove("disabled"));
     storageOptions.forEach(opt => opt.classList.remove("disabled"));
     if (modelType == "promax") {
-        ConfigureText.textContent = "Configure seu Mexerica Phone 15 Pro Max";
+        ConfigureText.textContent = "Configure seu Mexerica Phone 17 Pro Max";
     } else if(modelType == "pro") {
-        ConfigureText.textContent = "Configure seu Mexerica Phone 15 Pro";
+        ConfigureText.textContent = "Configure seu Mexerica Phone 17 Pro";
     }
     if (modelType !== "promax") {
         // Esconde memória de 8 GB
@@ -251,9 +251,9 @@ $('#add-to-cart').on('click', function() {
     const finalPrice = currentPrice;
    let modeling = 0
    if(selectedModel == 'pro') {
-       modeling = 'MexericaPhone 15 Pro';
+       modeling = 'MexericaPhone 17 Pro';
    } else if(selectedModel == 'promax') {
-       modeling = 'MexericaPhone 15 Pro Max';
+       modeling = 'MexericaPhone 17 Pro Max';
    } 
     // 2. Criar objeto de pedido
     const orderDetails = {

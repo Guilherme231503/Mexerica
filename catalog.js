@@ -1,6 +1,6 @@
 const products = [
   {
-    name: "Mexerica Phone 15 Pro Max",
+    name: "Mexerica Phone 17 Pro Max",
     price: 5999,
     colors: ["#363636", "#FF8C00", "#F5F5F5"],
     redirect: "mexericaphone.html",
@@ -12,7 +12,7 @@ const products = [
     newRedirect: "mexericaphonenew.html"
   },
   {
-    name: "Mexerica Phone 15 Plus",
+    name: "Mexerica Phone 17 Plus",
     price: 4999,
     colors: ["#A9B689","#DFCEEA","#96AED1", "#353839", "#F5F5F5"],
     redirect: "mexericaphonem.html",
